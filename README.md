@@ -16,10 +16,6 @@ A Nuke gizmo for AOV-based relighting in compositing. Adds virtual lights to ren
   - `DiffuseLighting` : Diffuse light pass (for Replace Lighting mode)
   - `SpecularLighting` : Specular light pass (for Replace Lighting mode)
 
-* All passes must be in **world space**. The kernel expects:
-- Normal range: -1 to 1 (standard for most renderers)
-- Position: world-space coordinates (not camera-space)
-
 ## Installation
 
 1. Copy `AOV_Relight.gizmo` to your `.nuke` folder 
