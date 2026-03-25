@@ -3,9 +3,9 @@
 # AOV Relight Toolkit
 A Nuke gizmo for AOV-based relighting in compositing. Adds virtual lights to rendered scenes using Normal, Position, and Albedo passes.
 
-<img src="https://github.com/user-attachments/assets/17890352-82de-48c8-84f7-ee14d01368a2" width="500" height="700"/>
-
-<img src="https://github.com/user-attachments/assets/a3856e35-f2bf-40ad-9f8b-07f5cc8011f5" width="500" height="700"/>
+![AOVRelight2_point](https://github.com/user-attachments/assets/a4cbee7c-a638-45fe-8190-77ba03170348)
+![AOVRelight2_directional](https://github.com/user-attachments/assets/7f8d78ee-d32a-4f58-810a-50ac1a898397)
+![AOVRelight2_Compmode](https://github.com/user-attachments/assets/96679d73-4071-4185-9091-51e27b81d9cd)
 
 ## Requirements
 - Nuke 13+ (tested on Nuke 15)
@@ -49,7 +49,7 @@ toolbar.addCommand('Filter/AOV_Relight', 'nuke.createNode("AOV_Relight")')
 | Enable Specular | Toggle specular calculation on/off |
 | Spec Intensity | Specular brightness multiplier |
 | Shininess | Highlight sharpness (8 = broad, 256 = pinpoint) |
-| Fresnel Strength | Edge specular boost (Schlick approximation) |
+| Fresnel Strength | Edge specular boost (Schlick approximation, inspired by [Alex Villabon](https://youtu.be/FZo0dckEklc)) |
 
 ### Options Tab
 
