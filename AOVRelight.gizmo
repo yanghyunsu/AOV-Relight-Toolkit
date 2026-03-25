@@ -1,0 +1,247 @@
+#! C:/Program Files/Nuke15.2v7/nuke-15.2.7.dll -nx
+version 15.2 v7
+Gizmo {
+ knobChanged "\nk = nuke.thisKnob()\nn = nuke.thisNode()\nb = n.node('BlinkScript1')\n\n# Light Type → show/hide\nif k.name() in \['lightType', 'showPanel']:\n    lt = n\['lightType'].value()\n    n\['lightDir'].setVisible(lt == 'Directional')\n    n\['lightPos'].setVisible(lt == 'Point')\n    n\['falloffRadius'].setVisible(lt == 'Point')\n    n\['falloffType'].setVisible(lt == 'Point')\n\n# Enable Specular → show/hide\nif k.name() in \['enableSpec', 'showPanel']:\n    specOn = n\['enableSpec'].value()\n    n\['specIntensity'].setVisible(specOn)\n    n\['shininess'].setVisible(specOn)\n    n\['fresnelStrength'].setVisible(specOn)\n    n\['cameraPos'].setVisible(specOn)\n    n\['autoDetect'].setVisible(specOn)\n\n# Comp Mode → Switch\nif k.name() in \['compMode', 'showPanel']:\n    mode = n\['compMode'].value()\n    sw = n.node('Switch1')\n    if sw:\n        modes = \{'Add to Beauty': 0, 'Replace Lighting': 1, 'Relight Only': 2, 'Source': 3\}\n        sw\['which'].setValue(modes.get(mode, 0))\n\n# Pass values to BlinkScript\nif b:\n    b\['AOV_Relight_Light Type'].setValue(0 if n\['lightType'].value() == 'Directional' else 1)\n    b\['AOV_Relight_Light Direction'].setValue(n\['lightDir'].value())\n    b\['AOV_Relight_Light Position'].setValue(n\['lightPos'].value())\n    b\['AOV_Relight_Light Color'].setValue(n\['lightColor'].value())\n    b\['AOV_Relight_Intensity'].setValue(n\['intensity'].value())\n    b\['AOV_Relight_Ambient'].setValue(n\['ambient'].value())\n    b\['AOV_Relight_Wrap'].setValue(n\['wrap'].value())\n    b\['AOV_Relight_Enable Specular'].setValue(n\['enableSpec'].value())\n    b\['AOV_Relight_Spec Intensity'].setValue(n\['specIntensity'].value())\n    b\['AOV_Relight_Shininess'].setValue(n\['shininess'].value())\n    b\['AOV_Relight_Fresnel Strength'].setValue(n\['fresnelStrength'].value())\n    b\['AOV_Relight_Falloff Radius'].setValue(n\['falloffRadius'].value())\n    b\['AOV_Relight_Falloff Type'].setValue(int(n\['falloffType'].getValue()))\n    b\['AOV_Relight_Camera Position'].setValue(n\['cameraPos'].value())\n"
+ addUserKnob {20 lightTab l Light}
+ addUserKnob {4 lightType l "Light Type" M {Directional Point}}
+ addUserKnob {26 div1 l "" +STARTLINE}
+ addUserKnob {13 lightDir l "Light Direction"}
+ lightDir {0 -1 0.5}
+ addUserKnob {13 lightPos l "Light Position" +HIDDEN}
+ lightPos {0 200 0}
+ addUserKnob {7 falloffRadius l "Falloff Radius" +HIDDEN R 1 2000}
+ falloffRadius 500
+ addUserKnob {4 falloffType l "Falloff Type" +HIDDEN M {Linear Quadratic}}
+ falloffType Quadratic
+ addUserKnob {26 div2 l "" +STARTLINE}
+ addUserKnob {19 lightColor l "Light Color"}
+ lightColor {0.9 0.95 0.9 1}
+ addUserKnob {6 lightColor_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {7 intensity l Intensity R 0 5}
+ intensity 3.74
+ addUserKnob {7 ambient l Ambient}
+ ambient 0.715
+ addUserKnob {7 wrap l Wrap}
+ wrap 0.22
+ addUserKnob {20 specTab l Specular}
+ addUserKnob {6 enableSpec l "Enable Specular" +STARTLINE}
+ enableSpec true
+ addUserKnob {7 specIntensity l "Spec Intensity" R 0 3}
+ specIntensity 0.5
+ addUserKnob {7 shininess l Shininess R 2 256}
+ shininess 32
+ addUserKnob {7 fresnelStrength l "Fresnel Strength" R 0 3}
+ fresnelStrength 1
+ addUserKnob {20 optionsTab l Options}
+ addUserKnob {13 cameraPos l "Camera Position"}
+ cameraPos {0 0 10}
+ addUserKnob {22 autoDetect l "Auto-Detect from EXR" -STARTLINE T "\nn = nuke.thisNode()\ninp = n.input(0)\nif inp:\n    meta = inp.metadata()\n    xform = meta.get('exr/rs/camera/transform')\n    if xform:\n        n\['cameraPos'].setValue(\[xform\[12], xform\[13], xform\[14]])\n        nuke.message('Camera detected: X=%.3f Y=%.3f Z=%.3f' % (xform\[12], xform\[13], xform\[14]))\n    else:\n        nuke.message('No camera metadata found in EXR.')\nelse:\n    nuke.message('No input connected.')\n"}
+ addUserKnob {26 div3 l "" +STARTLINE}
+ addUserKnob {4 compMode l "Comp Mode" M {"Add to Beauty" "Replace Lighting" "Relight Only" Source}}
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos 0
+ }
+ Unpremult {
+  name Unpremult1
+  xpos 79
+  ypos 39
+ }
+set N41835200 [stack 0]
+ Dot {
+  name Dot3
+  xpos 232
+  ypos 42
+ }
+set N4a15e000 [stack 0]
+ Dot {
+  name Dot2
+  xpos 232
+  ypos 232
+ }
+set N4a15e400 [stack 0]
+push $N41835200
+add_layer {DiffuseFilter DiffuseFilter.red DiffuseFilter.green DiffuseFilter.blue}
+ Shuffle2 {
+  fromInput1 {
+   {0}
+   B
+  }
+  in1 DiffuseFilter
+  fromInput2 {
+   {0}
+   B
+  }
+  mappings "4 DiffuseFilter.red 0 0 rgba.red 0 0 DiffuseFilter.green 0 1 rgba.green 0 1 DiffuseFilter.blue 0 2 rgba.blue 0 2 black -1 -1 rgba.alpha 0 3"
+  name Albedo
+  xpos 110
+  ypos 125
+  postage_stamp true
+ }
+push $N41835200
+ Dot {
+  name Dot7
+  xpos -207
+  ypos 42
+ }
+add_layer {P P.red P.green P.blue}
+ Shuffle2 {
+  fromInput1 {
+   {0}
+   B
+  }
+  in1 P
+  fromInput2 {
+   {0}
+   B
+  }
+  mappings "4 P.red 0 0 rgba.red 0 0 P.green 0 1 rgba.green 0 1 P.blue 0 2 rgba.blue 0 2 black -1 -1 rgba.alpha 0 3"
+  name WorldPosition
+  xpos -241
+  ypos 99
+  postage_stamp true
+ }
+push $N41835200
+add_layer {N N.red N.green N.blue}
+ Shuffle2 {
+  fromInput1 {
+   {0}
+   B
+  }
+  in1 N
+  fromInput2 {
+   {0}
+   B
+  }
+  mappings "4 N.red 0 0 rgba.red 0 0 N.green 0 1 rgba.green 0 1 N.blue 0 2 rgba.blue 0 2 black -1 -1 rgba.alpha 0 3"
+  name Normal
+  xpos -31
+  ypos 105
+  postage_stamp true
+ }
+ BlinkScript {
+  inputs 3
+  recompileCount 10
+  ProgramGroup 1
+  KernelDescription "3 \"AOV_Relight\" iterate pixelWise 609457fc841416d368cd3a0097eeefcabb487416ba539a8f2e1ba684d06b913c 4 \"normal\" Read Point \"position\" Read Point \"albedo\" Read Point \"dst\" Write Point 14 \"Light Type\" Int 1 AAAAAA== \"Light Direction\" Float 3 AAAAAAAAgD8AAAA/AAAAAA== \"Light Position\" Float 3 AAAAAAAASEMAAAAAAAAAAA== \"Light Color\" Float 4 AACAPzMzcz/NzEw/AACAPw== \"Intensity\" Float 1 AADAPw== \"Ambient\" Float 1 zcxMPQ== \"Camera Position\" Float 3 AAAAAAAAAAAAACBBAAAAAA== \"Wrap\" Float 1 AAAAAA== \"Enable Specular\" Bool 1 AQ== \"Spec Intensity\" Float 1 AAAAPw== \"Shininess\" Float 1 AAAAQg== \"Fresnel Strength\" Float 1 AACAPw== \"Falloff Radius\" Float 1 AAD6Qw== \"Falloff Type\" Int 1 AQAAAA== 14 \"lightType\" 1 1 Default \"lightDir\" 3 1 Default \"lightPos\" 3 1 Default \"lightColor\" 4 1 Default \"intensity\" 1 1 Default \"ambient\" 1 1 Default \"cameraPos\" 3 1 Default \"wrap\" 1 1 Default \"enableSpec\" 1 1 Default \"specIntensity\" 1 1 Default \"shininess\" 1 1 Default \"fresnelStrength\" 1 1 Default \"falloffRadius\" 1 1 Default \"falloffType\" 1 1 Default 1 \"L_dir\" Float 3 1 AAAAAAAAAAAAAAAAAAAAAA=="
+  kernelSource "kernel AOV_Relight : ImageComputationKernel<ePixelWise>\n\{\n  Image<eRead, eAccessPoint, eEdgeClamped> normal;    // input 0: N pass\n  Image<eRead, eAccessPoint, eEdgeClamped> position;  // input 1: P pass\n  Image<eRead, eAccessPoint, eEdgeClamped> albedo;    // input 2: DiffuseFilter\n  Image<eWrite> dst;\n\n  param:\n    // Light Type\n    int    lightType;        // 0 = Directional, 1 = Point\n\n    // Light Properties\n    float3 lightDir;         // Direction (Directional mode)\n    float3 lightPos;         // Position (Point mode)\n    float4 lightColor;       // RGBA\n    float  intensity;\n    float  ambient;\n\n    // Camera (for specular)\n    float3 cameraPos;\n\n    // Diffuse\n    float  wrap;             // 0 = lambert, 1 = full wrap\n\n    // Specular\n    bool   enableSpec;\n    float  specIntensity;\n    float  shininess;        // higher = tighter highlight\n    float  fresnelStrength;  // 0 = off, 1+ = edge boost\n\n    // Attenuation (Point light only)\n    float  falloffRadius;\n    int    falloffType;      // 0 = Linear, 1 = Quadratic\n\n    // Options\n\n  local:\n    float3 L_dir;\n\n  void define()\n  \{\n    defineParam(lightType,       \"Light Type\",         0);\n    defineParam(lightDir,        \"Light Direction\",    float3(0.0f, 1.0f, 0.5f));\n    defineParam(lightPos,        \"Light Position\",     float3(0.0f, 200.0f, 0.0f));\n    defineParam(lightColor,      \"Light Color\",        float4(1.0f, 0.95f, 0.8f, 1.0f));\n    defineParam(intensity,       \"Intensity\",          1.5f);\n    defineParam(ambient,         \"Ambient\",            0.05f);\n    defineParam(cameraPos,       \"Camera Position\",    float3(0.0f, 0.0f, 10.0f));\n    defineParam(wrap,            \"Wrap\",               0.0f);\n    defineParam(enableSpec,      \"Enable Specular\",    true);\n    defineParam(specIntensity,   \"Spec Intensity\",     0.5f);\n    defineParam(shininess,       \"Shininess\",          32.0f);\n    defineParam(fresnelStrength, \"Fresnel Strength\",   1.0f);\n    defineParam(falloffRadius,   \"Falloff Radius\",     500.0f);\n    defineParam(falloffType,     \"Falloff Type\",       1);\n  \}\n\n  void init()\n  \{\n    if (lightType == 0)\n    \{\n      float len = sqrt(lightDir.x * lightDir.x\n                     + lightDir.y * lightDir.y\n                     + lightDir.z * lightDir.z);\n      if (len > 0.0001f)\n      \{\n        L_dir.x = lightDir.x / len;\n        L_dir.y = lightDir.y / len;\n        L_dir.z = lightDir.z / len;\n      \}\n      else\n      \{\n        L_dir = float3(0.0f, 1.0f, 0.0f);\n      \}\n    \}\n  \}\n\n  void process()\n  \{\n    // --- Read Normal ---\n    float3 N;\n    N.x = normal().x;\n    N.y = normal().y;\n    N.z = normal().z;\n\n    float nLen = sqrt(N.x * N.x + N.y * N.y + N.z * N.z);\n    if (nLen < 0.0001f)\n    \{\n      dst() = float4(0.0f, 0.0f, 0.0f, 0.0f);\n      return;\n    \}\n\n    // --- Read Position & Albedo ---\n    float3 P;\n    P.x = position().x;\n    P.y = position().y;\n    P.z = position().z;\n\n    float3 alb;\n    alb.x = albedo().x;\n    alb.y = albedo().y;\n    alb.z = albedo().z;\n\n    // --- Light Vector + Attenuation ---\n    float3 L;\n    float attenuation = 1.0f;\n\n    if (lightType == 0)\n    \{\n      L = L_dir;\n    \}\n    else\n    \{\n      L.x = lightPos.x - P.x;\n      L.y = lightPos.y - P.y;\n      L.z = lightPos.z - P.z;\n\n      float dist = sqrt(L.x * L.x + L.y * L.y + L.z * L.z);\n\n      if (dist > 0.0001f)\n      \{\n        L.x /= dist;\n        L.y /= dist;\n        L.z /= dist;\n      \}\n\n      if (falloffRadius > 0.0001f)\n      \{\n        if (falloffType == 0)\n        \{\n          attenuation = max(1.0f - (dist / falloffRadius), 0.0f);\n        \}\n        else\n        \{\n          float ratio = falloffRadius / max(dist, 0.001f);\n          attenuation = min(ratio * ratio, 1.0f);\n        \}\n      \}\n    \}\n\n    // --- Diffuse ---\n    float NdotL = N.x * L.x + N.y * L.y + N.z * L.z;\n    float diffuse;\n\n    if (wrap > 0.0f)\n    \{\n      diffuse = max((NdotL + wrap) / (1.0f + wrap), 0.0f);\n    \}\n    else\n    \{\n      diffuse = max(NdotL, 0.0f);\n    \}\n\n    // --- Specular (Blinn-Phong + Fresnel) ---\n    float spec = 0.0f;\n\n    if (enableSpec && NdotL > 0.0f)\n    \{\n      float3 V;\n      V.x = cameraPos.x - P.x;\n      V.y = cameraPos.y - P.y;\n      V.z = cameraPos.z - P.z;\n\n      float vLen = sqrt(V.x * V.x + V.y * V.y + V.z * V.z);\n      if (vLen > 0.0001f)\n      \{\n        V.x /= vLen;\n        V.y /= vLen;\n        V.z /= vLen;\n      \}\n\n      float3 H;\n      H.x = L.x + V.x;\n      H.y = L.y + V.y;\n      H.z = L.z + V.z;\n\n      float hLen = sqrt(H.x * H.x + H.y * H.y + H.z * H.z);\n      if (hLen > 0.0001f)\n      \{\n        H.x /= hLen;\n        H.y /= hLen;\n        H.z /= hLen;\n      \}\n\n      float NdotH = max(N.x * H.x + N.y * H.y + N.z * H.z, 0.0f);\n      spec = pow(NdotH, shininess) * specIntensity;\n\n      if (fresnelStrength > 0.0f)\n      \{\n        float NdotV = max(N.x * V.x + N.y * V.y + N.z * V.z, 0.0f);\n        float fresnel = pow(1.0f - NdotV, 5.0f);\n        spec *= (1.0f + fresnel * fresnelStrength);\n      \}\n    \}\n\n    // --- Output ---\n    float3 result;\n    result.x = attenuation * intensity * lightColor.x * (alb.x * diffuse + spec) + alb.x * ambient;\n    result.y = attenuation * intensity * lightColor.y * (alb.y * diffuse + spec) + alb.y * ambient;\n    result.z = attenuation * intensity * lightColor.z * (alb.z * diffuse + spec) + alb.z * ambient;\n\n    dst() = float4(result.x, result.y, result.z, 1.0f);\n  \}\n\};"
+  rebuild ""
+  "AOV_Relight_Light Direction" {0 -1 0.5}
+  "AOV_Relight_Light Color" {0.9 0.95 0.9 1}
+  AOV_Relight_Intensity 3.74
+  AOV_Relight_Ambient 0.715
+  AOV_Relight_Wrap 0.22
+  rebuild_finalise ""
+  name BlinkScript1
+  xpos 0
+  ypos 250
+ }
+set N41833e00 [stack 0]
+ Dot {
+  name Dot4
+  xpos -121
+  ypos 259
+ }
+ Dot {
+  name Dot5
+  xpos -121
+  ypos 438
+ }
+push $N4a15e400
+push $N4a15e000
+ Dot {
+  name Dot1
+  xpos 396
+  ypos 42
+ }
+set N4a15f400 [stack 0]
+add_layer {DiffuseLighting DiffuseLighting.red DiffuseLighting.green DiffuseLighting.blue}
+ Shuffle2 {
+  fromInput1 {
+   {0}
+   B
+  }
+  in1 DiffuseLighting
+  fromInput2 {
+   {0}
+   B
+  }
+  mappings "4 DiffuseLighting.red 0 0 rgba.red 0 0 DiffuseLighting.green 0 1 rgba.green 0 1 DiffuseLighting.blue 0 2 rgba.blue 0 2 black -1 -1 rgba.alpha 0 3"
+  name DiffuseLighting
+  xpos 317
+  ypos 133
+  postage_stamp true
+ }
+ Merge2 {
+  inputs 2
+  operation minus
+  name Merge3
+  xpos 317
+  ypos 301
+ }
+push $N4a15f400
+add_layer {SpecularLighting SpecularLighting.red SpecularLighting.green SpecularLighting.blue}
+ Shuffle2 {
+  fromInput1 {
+   {0}
+   B
+  }
+  in1 SpecularLighting
+  fromInput2 {
+   {0}
+   B
+  }
+  mappings "4 SpecularLighting.red 0 0 rgba.red 0 0 SpecularLighting.green 0 1 rgba.green 0 1 SpecularLighting.blue 0 2 rgba.blue 0 2 black -1 -1 rgba.alpha 0 3"
+  name SpecularLighting
+  xpos 430
+  ypos 134
+  postage_stamp true
+ }
+ Merge2 {
+  inputs 2
+  operation minus
+  name Merge4
+  xpos 430
+  ypos 301
+ }
+push $N41833e00
+ Merge2 {
+  inputs 2
+  operation plus
+  name Merge2
+  xpos 430
+  ypos 351
+ }
+ Dot {
+  name Dot6
+  xpos 464
+  ypos 438
+ }
+push $N41833e00
+push $N4a15e400
+ Merge2 {
+  inputs 2
+  operation plus
+  name Merge1
+  xpos 0
+  ypos 353
+ }
+ Switch {
+  inputs 4
+  name Switch1
+  xpos 0
+  ypos 435
+ }
+ Premult {
+  name Premult1
+  xpos 0
+  ypos 479
+ }
+ Output {
+  name Output1
+  xpos 0
+  ypos 546
+ }
+end_group
