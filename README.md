@@ -28,7 +28,7 @@ toolbar.addCommand('Filter/AOV_Relight', 'nuke.createNode("AOV_Relight")')
 
 ### Light Tab
 
-<img width="537" height="570" alt="image" src="https://github.com/user-attachments/assets/7c3fbe47-7c08-4199-a71e-ea22376971c9" />
+<img width="537" height="300" alt="image" src="https://github.com/user-attachments/assets/7c3fbe47-7c08-4199-a71e-ea22376971c9" />
 
 | Parameter | Description |
 |-----------|-------------|
@@ -42,7 +42,7 @@ toolbar.addCommand('Filter/AOV_Relight', 'nuke.createNode("AOV_Relight")')
 
 ### Specular Tab
 
-<img width="537" height="570" alt="image" src="https://github.com/user-attachments/assets/2dfa0712-43d8-4ead-8083-0ef0c0109e6e" />
+<img width="537" height="300" alt="image" src="https://github.com/user-attachments/assets/2dfa0712-43d8-4ead-8083-0ef0c0109e6e" />
 
 | Parameter | Description |
 |-----------|-------------|
@@ -53,7 +53,7 @@ toolbar.addCommand('Filter/AOV_Relight', 'nuke.createNode("AOV_Relight")')
 
 ### Options Tab
 
-<img width="537" height="564" alt="image" src="https://github.com/user-attachments/assets/d4b44116-6c71-4932-9074-1b68f1a43efd" />
+<img width="537" height="300" alt="image" src="https://github.com/user-attachments/assets/d4b44116-6c71-4932-9074-1b68f1a43efd" />
 
 | Parameter | Description |
 |-----------|-------------|
